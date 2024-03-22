@@ -400,5 +400,77 @@ select * From Employee
 -- Check Department 
 select Departmants.[Department Name], Departmants.[Department ID] from Departmants]
 
+-------------------------------------------------------------------------------------
 
 -- Delete Procedure
+go
+create proc DeleteEmployee
+@EmpID int
+AS
+begin try --attempts to run the SQL with parameter
+	delete from Employee
+	where [Employee ID] = @EmpID
+end try
+
+begin catch -- attempts to capture any errors
+		select ERROR_LINE() as LineNum,
+				ERROR_MESSAGE() as Msg,
+				ERROR_PROCEDURE() as ProcName,
+				ERROR_SEVERITY() as ERRSeverity
+end catch
+return 0 
+go
+--FK in another table should give error
+exec DeleteEmployee 30
+
+-- Check Data
+select * from Employee
+select * from Employee where [Employee ID] = 15
+
+-------------------------------------------------------------------------------------
+
+--Stored Proc using like with the wildcards added on
+Go
+create proc NameCheck
+@SName nvarchar(20)
+As
+	select Employee.[Employee ID] as ID,
+		Employee.[Name] as FName,
+		Employee.Surname as SName,
+		Employee.Position as Position
+	from Employee
+	where Employee.Surname like '%' + @SName + '%' -- '%Chars%'
+
+return 0
+go
+exec NameCheck 'Fernandes'
+go
+exec NameCheck 'ou'
+go
+
+-------------------------------------------------------------------------------------
+
+--Check staff birthday
+create proc Birthday
+@Date1 datetime,
+@Date2 datetime
+As
+	if exists (select 1 from Employee where Employee.DOB between @Date1 and @Date2) --check valid date range
+	begin
+		select Employee.Name + ' ' + Employee.Surname as Full_Name, Employee.Position, Employee.DOB
+		from Employee
+		where Employee.[DOB] between @Date1 and @Date2
+	end
+	else
+	begin
+			print 'Invalid Date Range! No data to return.'
+			return -1 -- stop proc
+	end
+return 0
+go
+--valid range (all birthdayas)
+exec Birthday '02/01/1901', '07/01/2021'
+--valid range (some birthdayas)
+exec Birthday '02/01/2001', '07/01/2021'
+--invalid range
+exec Birthday '01/01/2024', '03/21/2024'
