@@ -181,7 +181,7 @@ values('Butlers','Chocolate','Chocolate','0'),
 ('Buongiorno','Pasta','Italian Food','0'),
 ('Colgate','ToothPaste','Total White','0'),
 ('Axe','Deodorant','Cleanesses','0'),
-('NescafÈ','Coffee','Instant Coffee','0'),
+('Nescaf√©','Coffee','Instant Coffee','0'),
 ('Oreo', 'Sweets', 'Cake','0'),
 ('FreshChicken', 'Chicken', 'Chicken Breast' ,'0')
 
@@ -203,8 +203,8 @@ VALUES('11','Butlers','Chocolate - White Chocolate','1.5','50'),
 ('12','Buongiorno','Pasta - Lasagna','3.25','166'),
 ('13','Colgate','ToothPaste - Total White','3', '44'),
 ('14','Axe','Deodorant - 48hr Sports','2', '65'),
-('15','NescafÈ','Coffee - Intense','6', '30'),
-('15','NescafÈ','Coffee - Decaff','5.5', '15'),
+('15','Nescaf√©','Coffee - Intense','6', '30'),
+('15','Nescaf√©','Coffee - Decaff','5.5', '15'),
 ('16', 'Oreo', 'Sweets - Cake','10', '20'),
 ('16', 'Oreo', 'Sweets - Cookie','3.3', '133'),
 ('17', 'FreshChicken', 'Chicken - Chicken Breast' ,'5.0', '23'),
@@ -222,7 +222,7 @@ VALUES ('11','John Kelly','Butlers','085 1234567'),
 ('12','Mary Noolan','Buongiorno','087 1234567'),
 ('13','Jennifer','Colgate','087 1234567'),
 ('14','Mary Noolan','Axe','087 1234567'),
-('15','Mary Noolan','NescafÈ','087 1234567'),
+('15','Mary Noolan','Nescaf√©','087 1234567'),
 ('16','Laura Whelan','SweetStuff','087 1234567'),
 ('17','Jordan McLean','FreshChicken','087 1234567')
 
@@ -237,7 +237,7 @@ where [Company Name] = 'Axe';
 --
 update [Company Rep]
 set [Supplier ID] = 15
-where [Company Name] = 'NescafÈ';
+where [Company Name] = 'Nescaf√©';
 
 -- Check table data
 SELECT * FROM [Company Rep]
@@ -326,7 +326,7 @@ go
 select * from EmployeeOrder
 
 -------------------------------------------------------------------------------------
---At least 1 using ìDISTINCTî operator.
+--At least 1 using ‚ÄúDISTINCT‚Äù operator.
 DROP VIEW IF EXISTS CleanData
 -- Create CleanData VIEW 3
 go
@@ -343,7 +343,7 @@ select * from CleanData
 -------------------------------------------------------------------------------------
 
 
---At least 1 using ìAliasedî column name
+--At least 1 using ‚ÄúAliased‚Äù column name
 -- Create Checking_Gender VIEW 4
 
 go
@@ -364,39 +364,23 @@ go
 select * from Checking_Gender
 
 -------------------------------------------------------------------------------------
+-- STORE PROCEDURES
+-------------------------------------------------------------------------------------
 
+--Insert Procedure
+go
+create proc InsertEmployee
+@DeptID int,
+@GenderID char(1),
+@Pos nvarchar(50),
+@FName varchar(50),
+@SName varchar(50),
+@DOB Date,
+@EirCode nvarchar(8)
 
-
----------------------
---store procedures
-
-
---insert procedure
---CREATE PROCEDURE [dbo].[uspAddStudent]
---	@fn nvarchar(50),
---	@sn nvarchar(50),
---	@eirC nvarchar(20),
---	@cy nvarchar(50),
---	@age nvarchar(150),
---	@ge nvarchar(50),
---	@ph nvarchar(20),
---	@ema nvarchar(100),
---	@cour nvarchar(50),
---	@mod nvarchar(50)
---AS
---	INSERT INTO Student(FirstName, Surname, EirCode, County, Age, Gender, Phone, Email, Course, Module) VALUES(@fn, @sn, @eirC, @cy, @age, @ge, @ph, @ema, @cour, @mod)
---RETURN 0
-
---Insert Proc
-create proc InsertDesigner
-@FName varchar(30),
-@SName varchar(30),
-@Email varchar(100),
-@Phone varchar(20)
 As
-	insert into Designer(DesignerFirstName,DesignerSurName,DesignerEmail,DesignerPhoneNo)
-	--values('Jennie','Byrne','jennifer.byrne@dbs.ie','+353146454')
-	values(@FName,@SName,@Email,@Phone)
+	insert into Employee([Department ID], [Gender ID], [Position], [Name], [Surname], [DOB], [EirCode])
+	values(@DeptID, @GenderID, @Pos, @FName, @SName, @DOB, @EirCode)
 	if @@ERROR <> 0 OR @@ROWCOUNT <> 1
 	BEGIN
 			select ERROR_MESSAGE(),ERROR_PROCEDURE() -- functions to bring back system info
@@ -405,5 +389,16 @@ As
 	END
 return 0 -- all good
 go
-exec InsertDesigner 'Jennie','Byrne','jennifer.byrne@dbs.ie','+353146454'
+exec InsertEmployee'1', 'M', 'Bartender', 'Daniel', 'Fernandes','11/12/1998', 'D07WN4V'
+exec InsertEmployee'2', 'M', 'Butcher', 'Ryan', 'Gosling','11/12/1980', 'D04FF4V'
+exec InsertEmployee'3', 'O', 'Customer Service', 'Eoghan', 'Ferry','03/22/2003', 'D03X458'
+exec InsertEmployee'4', 'M', 'Benefits', 'Maria', 'Paula','07/30/1999', 'D07WN4V'
 go
+
+--Check Data
+select * From Employee
+-- Check Department 
+select Departmants.[Department Name], Departmants.[Department ID] from Departmants]
+
+
+-- Delete Procedure
